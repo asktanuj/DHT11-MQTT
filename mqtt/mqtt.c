@@ -318,10 +318,6 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
                 //printf("Got PUBLISH message with size %d\n", (uint8_t)buffer[1]);
                 uint32_t topicSize = (buffer[2] << 8) + buffer[3];
                 //printf("Topic size is %d\n", topicSize);
-                for(int loop = 0; loop < topicSize; ++loop) {
-                    putchar(buffer[4 + loop]);
-                }
-                //putchar('\n');
                 unsigned long i = 4 + topicSize;
                 if (((buffer[0] >> 1) & 0x03) > QoS0) {
                     //uint32_t messageId = (buffer[4 + topicSize] << 8) + buffer[4 + topicSize + 1];
@@ -334,10 +330,17 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
                         return 0;
                     }
                 }
+                /* Display message and topic */
+                printf("Topic: ");
+                for(int loop = 0; loop < topicSize; ++loop) {
+                    print(buffer[4 + loop]);
+                }
+                print('\n');
                 for ( ; i < sz; ++i) { 
                     print(buffer[i]);
                 }
                 print('\n');
+                /* Display message ends */
                 return 0;
             }
         }
