@@ -187,9 +187,6 @@ void publish_data(void)
         if (mqtt_publish(broker, topic, pub_msg, QoS1) == -1) {
             puts("Publish failed");
         }
-        else {
-            puts("Sent message to broker");
-        }
     }
     else {
         puts("Not connected to broker");
@@ -230,6 +227,7 @@ int main( void )
         initialize();
         if (readData() != -1) {
             publish_data();
+            puts("\n");
             sleep(5);
         }
         else {

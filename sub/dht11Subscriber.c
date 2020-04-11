@@ -66,6 +66,7 @@ int main (int argc, char** argv)
             }
         }
         ret = mqtt_display_message(broker, &putchar);
+        puts("\n");
     }
 
     return 0;
