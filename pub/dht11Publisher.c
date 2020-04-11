@@ -171,7 +171,7 @@ static int readData(void)
 static void publish_connect(void)
 {
     broker = mqtt_connect(client_name, ip_addr, port);
-    if (broker == NULL) {
+    if (broker == 0) {
         puts("Failed to connect");
         exit(1);
     }
@@ -183,7 +183,7 @@ static void publish_connect(void)
 ********************************************************************************************/
 void publish_data(void)
 {
-    if (broker != NULL) {
+    if (broker != 0) {
         if (mqtt_publish(broker, topic, pub_msg, QoS1) == -1) {
             puts("Publish failed");
         }
@@ -203,7 +203,7 @@ void publish_data(void)
 ********************************************************************************************/
 void publish_disconnect(void)
 {
-    if (broker != NULL) {
+    if (broker != 0) {
         mqtt_disconnect(broker);
     }
     else {

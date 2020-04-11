@@ -123,13 +123,13 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
 {
     mqtt_broker_handle_t *broker = (mqtt_broker_handle_t *)calloc(sizeof(mqtt_broker_handle_t), 1) ;
     
-    if (broker != NULL) {
+    if (broker != 0) {
         // check connection strings are within bounds
         if ((strlen(client) + 1 > sizeof(broker->clientid)) ||
             (strlen(server_ip) + 1 > sizeof(broker->hostname))) {
             puts("Failed to connect: client or server exceed limits");
             free(broker);
-            return NULL;  // strings too large
+            return 0;  // strings too large
         }
 
         broker->port = port;
@@ -139,7 +139,7 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
         if ((broker->socket = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
             puts("Failed to connect: Could not create socket");
             free(broker);            
-            return NULL;
+            return 0;
         }
 
         // create the stuff we need to connect
@@ -153,7 +153,7 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
         if ((connect(broker->socket, (struct sockaddr *)&broker->socket_address, sizeof(broker->socket_address))) < 0) {
             puts("Failed to connect: To server socket");
             free(broker);
-            return NULL;
+            return 0;
         }
 
         // variable header
@@ -189,14 +189,14 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
             puts("Failed to send message");
             close(broker->socket);
             free(broker);
-            return NULL;
+            return 0;
         }
 
         uint8_t buffer[4];
         long sz = recv(broker->socket, buffer, sizeof(buffer), 0);  // wait for CONNACK
         //printf("buffer size is %ld\n",sz);
         //printf("%2x:%2x:%2x:%2x\n",(uint8_t)buffer[0],(uint8_t)buffer[1],(uint8_t)buffer[2],(uint8_t)buffer[3]);
-        if (GET_MESSAGE(buffer[0]) == CONNACK) &&
+        if ((GET_MESSAGE(buffer[0]) == CONNACK) &&
             ((sz-2) == buffer[1])              &&
             (buffer[3] == Connection_Accepted)) {
             printf("Connected to MQTT Server at %s:%4d\n", server_ip, port );
@@ -205,7 +205,7 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
             printf("Failed to connect with error: %d\n", buffer[3]);
             close(broker->socket);
             free(broker);
-            return NULL;
+            return 0;
         }
         // set connected flag
         broker->connected = true;
@@ -220,7 +220,7 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
 ********************************************************************************************/
 int mqtt_subscribe(mqtt_broker_handle_t *broker, const char *topic, QoS qos)
 {
-    if ((broker != NULL) || (! broker->connected)) {
+    if ((broker != 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
@@ -283,7 +283,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
 {
     uint8_t buffer[128];
 
-    if ((broker != NULL) || (! broker->connected)) {
+    if ((broker != 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
@@ -301,7 +301,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
            close(broker->socket);
            broker->socket = 0;
            free(broker);
-           broker = NULL;
+           broker = 0;
            return -1;
         }
         else if(sz < 0) {
@@ -309,7 +309,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
            close(broker->socket); /* Close socket if we get an error */
            broker->socket = 0;
            free(broker);
-           broker = NULL;
+           broker = 0;
            return -1;
         }
         else {
@@ -350,7 +350,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
 ********************************************************************************************/
 int mqtt_publish(mqtt_broker_handle_t *broker, const char *topic, const char *msg, QoS qos)
 {
-    if ((broker != NULL) || (! broker->connected)) {
+    if ((broker != 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
@@ -446,7 +446,7 @@ void mqtt_disconnect(mqtt_broker_handle_t *broker)
 {
     uint8_t fixed_header[] = {SET_MESSAGE(DISCONNECT), 0};
 
-    if ((broker != NULL) || (!broker->connected)) {
+    if ((broker != 0) || (!broker->connected)) {
         puts("Not connected to broker");
         return;
     }
@@ -459,5 +459,5 @@ void mqtt_disconnect(mqtt_broker_handle_t *broker)
     /* Close socket and free memory*/
     close(broker->socket);
     free(broker);
-    broker = NULL;
+    broker = 0;
 }
