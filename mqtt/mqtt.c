@@ -220,7 +220,7 @@ mqtt_broker_handle_t * mqtt_connect(const char* client, const char * server_ip, 
 ********************************************************************************************/
 int mqtt_subscribe(mqtt_broker_handle_t *broker, const char *topic, QoS qos)
 {
-    if ((broker != 0) || (! broker->connected)) {
+    if ((broker == 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
@@ -283,7 +283,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
 {
     uint8_t buffer[128];
 
-    if ((broker != 0) || (! broker->connected)) {
+    if ((broker == 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
@@ -350,7 +350,7 @@ int mqtt_display_message(mqtt_broker_handle_t *broker, int (*print)(int))
 ********************************************************************************************/
 int mqtt_publish(mqtt_broker_handle_t *broker, const char *topic, const char *msg, QoS qos)
 {
-    if ((broker != 0) || (! broker->connected)) {
+    if ((broker == 0) || (! broker->connected)) {
         puts("Not connected to broker");
         return -1;
     }
